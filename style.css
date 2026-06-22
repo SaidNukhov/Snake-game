@@ -4,26 +4,46 @@ html {
 }
 
 body {
+  background-color: #144;
   width: 100vw;
   height: 100vh;
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-rows: 20% 80%;
 }
 
 #gameCanvas {
-  width: 50%;
-  height: 50%;
+  justify-self: center;
+  align-self: start;
+  border-radius: 5px;
+  border: 1px solid #188;
+  width: 50vw;
+  height: 50vh;
   background-color: black;
 }
 
-#h1 {
-  display: none;
+.information {
+  margin: 0;
+  justify-self: center;
+  align-self: center;
   color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+.h1 {
+  color: yellowgreen;
+  font-size: 90px;
+  font-family:'Times New Roman', Times, serif;
+  font-weight: 1000;
+  font-variant: small-caps;
+  text-shadow: 0 8px 8px black;
+}
 
+#count {
+  color: white;
+}
 
 /*0 styles*/ 
 * {

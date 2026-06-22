@@ -1,6 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const h1 = document.getElementById('h1');
+const count = document.getElementById('count');
 
 // Snake
 // Size 
@@ -9,12 +10,78 @@ let snake = [
   {x: 130, y: 80} // Head
 ]
 
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
 function drawSnake() {
-  ctx.fillStyle = 'green';
-  snake.forEach(event => {
-    ctx.fillRect(event.x, event.y, horizontalSize, verticalSize);
+  snake.forEach((segment, index) => {
+    let w = horizontalSize;
+    let h = verticalSize;
+    let r = 1;
+    let color = 'green';
+
+    if (index === 0) {
+      w += 1;
+      h += 1;
+      color = 'yellowgreen';
+      r = 2;
     }
-  )
+    else if (index === snake.length - 1) {
+      w = horizontalSize - 1;
+      h = verticalSize - 1;
+      color = '#228B22';
+    }
+    else if (index % 2 === 0) {
+      color = 'lime';
+    }
+
+    const x = segment.x + (horizontalSize - w) / 2;
+    const y = segment.y + (verticalSize - h) / 2;
+
+    roundRect(ctx, x, y, w, h, r);
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    if (index === 0) {
+      ctx.fillStyle = 'black';
+      const eyeSize = 1;
+      let ex1, ey1, ex2, ey2;
+      switch (currentDirection) {
+        case 'U':
+          ex1 = segment.x + 1; ey1 = segment.y + 1;
+          ex2 = segment.x + 3; ey2 = segment.y + 1;
+          break;
+        case 'D':
+          ex1 = segment.x + 1; ey1 = segment.y + 3;
+          ex2 = segment.x + 3; ey2 = segment.y + 3;
+          break;
+        case 'L':
+          ex1 = segment.x + 1; ey1 = segment.y + 1;
+          ex2 = segment.x + 1; ey2 = segment.y + 3;
+          break;
+        case 'R':
+          ex1 = segment.x + 3; ey1 = segment.y + 1;
+          ex2 = segment.x + 3; ey2 = segment.y + 3;
+          break;
+        }
+      ctx.fillRect(ex1, ey1, eyeSize, eyeSize);
+      ctx.fillRect(ex2, ey2, eyeSize, eyeSize);
+      ctx.fillStyle = 'black';
+      ctx.fillRect(ex1 + 0.5, ey1 + 0.5, 0.5, 0.5);
+      ctx.fillRect(ex2 + 0.5, ey2 + 0.5, 0.5, 0.5);
+        }
+  });
 }
 
 // Move
@@ -89,11 +156,12 @@ function turnDown() {
   }
 }
 
+// Game over
 for(let i=1;i<snake.length;i++){
   if(snake[0].x === snake[i].x && snake[0].y === snake[i].y){
-    snake = [{x: 130, y: 80}];
-  }
-};
+    alert("Game Over");
+    location.reload();
+}};
 
   switch (moveWay) {
   case "U":
@@ -164,6 +232,9 @@ function eatFood() {
     listCount++;
     snake[listCount] += {x: snake[0].x - 5, y: snake[0].y};
   }
+
+  // Count
+  count.textContent = "Счёт = " + listCount;
 }
 
   // Food position logic
