@@ -58,6 +58,7 @@ function drawSnake() {
     ctx.fillStyle = color;
     ctx.fill();
 
+    // Eyes
     if (index === 0) {
       ctx.fillStyle = 'black';
       const eyeSize = 1;
@@ -222,10 +223,31 @@ let listCount = 0;
 let food = [];
 
 function drawFood() {
-  if(listCount < food.length){
-    ctx.fillStyle = food[listCount].color;
-    ctx.fillRect(food[listCount].x, food[listCount].y, food[listCount].width, food[listCount].height);
-  }
+  if (listCount >= food.length) return;
+  const f = food[listCount];
+  const cx = f.x + f.width/2;
+  const cy = f.y + f.height/2;
+  const r = f.width/2;
+  // Apple body
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#ff3333';
+  ctx.fill();
+  ctx.strokeStyle = '#cc0000';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Stem
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - r);
+  ctx.lineTo(cx + 1, cy - r - 2);
+  ctx.strokeStyle = '#4a2f1a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  // Leaf
+  ctx.beginPath();
+  ctx.ellipse(cx + 2, cy - r - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#2e7d32';
+  ctx.fill();
 }
 
 function eatFood() {
