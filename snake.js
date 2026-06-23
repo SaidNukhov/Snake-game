@@ -3,6 +3,11 @@ const ctx = canvas.getContext('2d');
 const h1 = document.getElementById('h1');
 const count = document.getElementById('count');
 
+// Time
+let tick = 100;
+let lastUpdate = 0;
+let baseTick = 100;
+
 // Snake
 // Size 
 let horizontalSize = 5, verticalSize = 5;
@@ -87,81 +92,66 @@ function drawSnake() {
 // Move
 let currentDirection = "U"; 
 let moveWay = "U";
-
+let speed = 5;
 function updateSnakePosition() {
 
 function turnLeft() {
   if(currentDirection !== "R") {
-    
     let head = snake[0];
     let newSnake = [];
-
-    newSnake.push({x: head.x - 5, y: head.y});
-
+    newSnake.push({x: head.x - speed, y: head.y});
     for(i = 0; i < snake.length - 1; i++) {
       newSnake.push(snake[i]);
     }
-
     snake = newSnake;
     currentDirection = "L";
   }
 }
-
 function turnRight() {
-  if(currentDirection !== "L"){
-    
+  if(currentDirection !== "L"){   
     let head = snake[0];
     let newSnake = [];
-
-    newSnake.push({x: head.x + 5, y: head.y});
-
+    newSnake.push({x: head.x + speed, y: head.y});
     for(i = 0; i < snake.length - 1; i++) {
       newSnake.push(snake[i]);
     }
-
     snake = newSnake;
     currentDirection = "R";
   }
 }
-
 function turnUp() {
   if(currentDirection !== "D"){
     let head = snake[0];
     let newSnake = [];
-
-    newSnake.push({x: head.x, y: head.y - 5});
-
+    newSnake.push({x: head.x, y: head.y - speed});
     for(i = 0; i < snake.length - 1; i++) {
       newSnake.push(snake[i]);
     }
-
     snake = newSnake;
     currentDirection = "U";
   }
 }
-
 function turnDown() {
   if(currentDirection !== "U"){
     let head = snake[0];
     let newSnake = [];
-
-    newSnake.push({x: head.x, y: head.y + 5});
-
+    newSnake.push({x: head.x, y: head.y + speed});
     for(i = 0; i < snake.length - 1; i++) {
       newSnake.push(snake[i]);
     }
-
     snake = newSnake;
     currentDirection = "D";
   }
 }
-
 // Game over
-for(let i=1;i<snake.length;i++){
-  if(snake[0].x === snake[i].x && snake[0].y === snake[i].y){
-    alert("Game Over");
-    location.reload();
-}};
+  if(snake.length > 2){
+    for(let i=1;i<snake.length;i++){
+      if(snake[0].x === snake[i].x && snake[0].y === snake[i].y){
+        alert("Game Over");
+        location.reload(); 
+      }
+    }
+  };
 
   switch (moveWay) {
   case "U":
@@ -212,49 +202,66 @@ document.addEventListener('keydown', (event) => {
         moveWay = "R";
       }
       break;
+    }
   }
-});
+);
+// Shift
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Shift'){
+    tick -= 50;
+  }
+})
+document.addEventListener('keyup', (e) => {
+  if(e.key === 'Shift'){
+    tick = baseTick;
+  }
+})
 
 // Food
 let listCount = 0;
 let food = [];
 
 function drawFood() {
-  ctx.fillStyle = food[listCount].color;
-  ctx.fillRect(food[listCount].x, food[listCount].y, food[listCount].width, food[listCount].height);
+  if(listCount < food.length){
+    ctx.fillStyle = food[listCount].color;
+    ctx.fillRect(food[listCount].x, food[listCount].y, food[listCount].width, food[listCount].height);
+  }
 }
 
 function eatFood() {
-  // Food radius
+  // First food
+  let hor = Math.floor(Math.random() * (canvas.width / 5)) * 5;
+  let ver = Math.floor(Math.random() * (canvas.height / 5)) * 5;
+  food.push({x: hor, y: ver, width: 5, height: 5, color: 'blue'})
+  // Food radius for eat better
   const ex = snake[0].x - food[listCount].x;
   const ey = snake[0].y - food[listCount].y;
   if (ex * ex + ey * ey < 5) {
+    const last = snake[snake.length -1];
+    snake.push({x: last.x, y: last.y});
     listCount++;
-    snake[listCount] += {x: snake[0].x - 5, y: snake[0].y};
+    // Eat position logic
+    let horizontal, vertical, overlap;
+    do {
+      horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
+      vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
+      overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
+    } while (overlap);
+    food.push({x: horizontal, y: vertical, width: 5, height: 5, color: 'blue'});
   }
-
-  // Count
-  count.textContent = "Счёт = " + listCount;
-}
-
-  // Food position logic
-for (i = 0; i < 299; i++) {
-  let horizontal = Math.floor(Math.random() * 100 + Math.random() * 100);
-  let vertical = Math.floor(Math.random() * 100 + 40);
-  horizontal = Math.round(horizontal / 5) * 5, vertical = Math.round(vertical / 5) * 5;
-  let obj = {x: horizontal, y: vertical, width: 5, height: 5, color: 'blue'};
-  food.push(obj);
+  // Count 
+    count.textContent = "Счёт = " + listCount;
 }
 
 function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-setInterval(() => {
-  updateSnakePosition();
-}, 100)
-
-function gameLoop() {
+function gameLoop(time) {
+  if(time - lastUpdate >= tick){
+    lastUpdate = time;
+    updateSnakePosition();
+  };
   clearCanvas();
   drawSnake();
   drawFood();
