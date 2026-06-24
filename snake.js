@@ -4,9 +4,10 @@ const h1 = document.getElementById('h1');
 const count = document.getElementById('count');
 
 // Time
+let baseTick = 100;
 let tick = 100;
 let lastUpdate = 0;
-let baseTick = 100;
+
 
 // Snake
 // Size 
@@ -28,7 +29,8 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
 }
-
+// Логика должна каждую отрисовку перемещать увелечение snake[eatHere] на следующий обьект массива snake
+// Мне нужно сделать так, чтобы eatHere увеличивался только на следующей итерации отрисовки, то-есть через кадр
 function drawSnake() {
   snake.forEach((segment, index) => {
     let w = horizontalSize;
@@ -43,12 +45,19 @@ function drawSnake() {
       r = 2;
     }
     else if (index === snake.length - 1) {
-      w = horizontalSize - 1;
-      h = verticalSize - 1;
+      w -= 1;
+      h -= 1;
       color = '#228B22';
     }
     else if (index % 2 === 0) {
       color = 'lime';
+    }
+
+    if (eatInSnake && eatHere === index) {
+      w += 4;
+      h += 4;
+      eatHere++;
+      console.log(eatHere);
     }
 
     const x = segment.x + (horizontalSize - w) / 2;
@@ -88,19 +97,20 @@ function drawSnake() {
       ctx.fillRect(ex2 + 0.5, ey2 + 0.5, 0.5, 0.5);
         }
   });
+  eatInSnake = false;
 }
 
 // Move
 let currentDirection = "U"; 
 let moveWay = "U";
-let speed = 5;
+
 function updateSnakePosition() {
 
 function turnLeft() {
   if(currentDirection !== "R") {
     let head = snake[0];
     let newSnake = [];
-    newSnake.push({x: head.x - speed, y: head.y});
+    newSnake.push({x: head.x - horizontalSize, y: head.y});
     for(i = 0; i < snake.length - 1; i++) {
       newSnake.push(snake[i]);
     }
@@ -112,7 +122,7 @@ function turnRight() {
   if(currentDirection !== "L"){   
     let head = snake[0];
     let newSnake = [];
-    newSnake.push({x: head.x + speed, y: head.y});
+    newSnake.push({x: head.x + horizontalSize, y: head.y});
     for(i = 0; i < snake.length - 1; i++) {
       newSnake.push(snake[i]);
     }
@@ -124,7 +134,7 @@ function turnUp() {
   if(currentDirection !== "D"){
     let head = snake[0];
     let newSnake = [];
-    newSnake.push({x: head.x, y: head.y - speed});
+    newSnake.push({x: head.x, y: head.y - verticalSize});
     for(i = 0; i < snake.length - 1; i++) {
       newSnake.push(snake[i]);
     }
@@ -136,7 +146,7 @@ function turnDown() {
   if(currentDirection !== "U"){
     let head = snake[0];
     let newSnake = [];
-    newSnake.push({x: head.x, y: head.y + speed});
+    newSnake.push({x: head.x, y: head.y + verticalSize});
     for(i = 0; i < snake.length - 1; i++) {
       newSnake.push(snake[i]);
     }
@@ -209,7 +219,7 @@ document.addEventListener('keydown', (event) => {
 // Shift
 document.addEventListener('keydown', (e) => {
   if(e.key === 'Shift'){
-    tick -= 50;
+    tick = 50;
   }
 })
 document.addEventListener('keyup', (e) => {
@@ -221,6 +231,8 @@ document.addEventListener('keyup', (e) => {
 // Food
 let listCount = 0;
 let food = [];
+let eatInSnake = false;
+let eatHere = 1;
 
 function drawFood() {
   if (listCount >= food.length) return;
@@ -244,7 +256,7 @@ function drawFood() {
   ctx.lineWidth = 1;
   ctx.stroke();
   // Leaf
-  ctx.beginPath();
+  ctx.beginPath();  
   ctx.ellipse(cx + 2, cy - r - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
   ctx.fillStyle = '#2e7d32';
   ctx.fill();
@@ -262,6 +274,8 @@ function eatFood() {
     const last = snake[snake.length -1];
     snake.push({x: last.x, y: last.y});
     listCount++;
+    eatInSnake = true;
+    eatHere = 1;
     // Eat position logic
     let horizontal, vertical, overlap;
     do {
@@ -280,14 +294,15 @@ function clearCanvas() {
 }
 
 function gameLoop(time) {
-  if(time - lastUpdate >= tick){
+  if(time-lastUpdate >= tick){
     lastUpdate = time;
     updateSnakePosition();
-  };
-  clearCanvas();
-  drawSnake();
-  drawFood();
-  eatFood();
+    clearCanvas();
+    drawSnake();
+    drawFood();
+    eatFood();
+    
+  }
   requestAnimationFrame(gameLoop);
 }
 
