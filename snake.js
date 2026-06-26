@@ -7,6 +7,7 @@ const count = document.getElementById('count');
 let baseTick = 100;
 let tick = 100;
 let lastUpdate = 0;
+let level = 0;
 
 
 // Snake
@@ -36,7 +37,7 @@ function drawSnake() {
     let w = horizontalSize;
     let h = verticalSize;
     let r = 1;
-    let color = 'green';
+    color = 'green';
 
     if (index === 0) {
       w += 1;
@@ -57,7 +58,7 @@ function drawSnake() {
       w += 4;
       h += 4;
       eatHere++;
-      console.log(eatHere);
+      
     }
 
     const x = segment.x + (horizontalSize - w) / 2;
@@ -224,17 +225,30 @@ document.addEventListener('keydown', (e) => {
 })
 document.addEventListener('keyup', (e) => {
   if(e.key === 'Shift'){
-    tick = baseTick;
+    tick = baseTick - level;
   }
 })
 
 // Food
 let listCount = 0;
-let food = [];
+let food = [{x: 100, y: 100, width: 5, height: 5, color: 'red'}];
 let eatInSnake = false;
 let eatHere = 1;
+let colorFood = 'red'
+// Пытаюсь реализовать логику ускорения
 
 function drawFood() {
+  if(10 % listCount){
+    colorFood = 'blue';
+    level += 20;
+    tick -= level; baseTick -= level;
+  }
+  else{
+    colorFood = 'red';
+  }
+
+  console.log(level);
+
   if (listCount >= food.length) return;
   const f = food[listCount];
   const cx = f.x + f.width/2;
@@ -243,9 +257,9 @@ function drawFood() {
   // Apple body
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = '#ff3333';
+  ctx.fillStyle = colorFood;
   ctx.fill();
-  ctx.strokeStyle = '#cc0000';
+  ctx.strokeStyle = colorFood;
   ctx.lineWidth = 2;
   ctx.stroke();
   // Stem
@@ -263,14 +277,7 @@ function drawFood() {
 }
 
 function eatFood() {
-  // First food
-  let hor = Math.floor(Math.random() * (canvas.width / 5)) * 5;
-  let ver = Math.floor(Math.random() * (canvas.height / 5)) * 5;
-  food.push({x: hor, y: ver, width: 5, height: 5, color: 'blue'})
-  // Food radius for eat better
-  const ex = snake[0].x - food[listCount].x;
-  const ey = snake[0].y - food[listCount].y;
-  if (ex * ex + ey * ey < 5) {
+  if(snake[0].x === food[listCount].x && snake[0].y === food[listCount].y) {
     const last = snake[snake.length -1];
     snake.push({x: last.x, y: last.y});
     listCount++;
@@ -283,7 +290,7 @@ function eatFood() {
       vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
       overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
     } while (overlap);
-    food.push({x: horizontal, y: vertical, width: 5, height: 5, color: 'blue'});
+    food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
   }
   // Count 
     count.textContent = "Счёт = " + listCount;
@@ -296,12 +303,11 @@ function clearCanvas() {
 function gameLoop(time) {
   if(time-lastUpdate >= tick){
     lastUpdate = time;
-    updateSnakePosition();
-    clearCanvas();
-    drawSnake();
-    drawFood();
-    eatFood();
-    
+      clearCanvas();
+      updateSnakePosition();
+      drawSnake();
+      drawFood();
+      eatFood();
   }
   requestAnimationFrame(gameLoop);
 }
