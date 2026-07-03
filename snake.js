@@ -7,7 +7,7 @@ const count = document.getElementById('count');
 let baseTick = 100;
 let tick = 100;
 let lastUpdate = 0;
-let level = 0;
+let shiftSpeed = 50;
 
 
 // Snake
@@ -220,34 +220,36 @@ document.addEventListener('keydown', (event) => {
 // Shift
 document.addEventListener('keydown', (e) => {
   if(e.key === 'Shift'){
-    tick = 50;
+    tick = shiftSpeed;
   }
 })
 document.addEventListener('keyup', (e) => {
   if(e.key === 'Shift'){
-    tick = baseTick - level;
+    tick = baseTick;
   }
 })
 
 // Food
 let listCount = 0;
+let speedUp = 0;
 let food = [{x: 100, y: 100, width: 5, height: 5, color: 'red'}];
 let eatInSnake = false;
 let eatHere = 1;
 let colorFood = 'red'
-// Пытаюсь реализовать логику ускорения
 
 function drawFood() {
-  if(10 % listCount){
-    colorFood = 'blue';
-    level += 20;
-    tick -= level; baseTick -= level;
-  }
-  else{
-    colorFood = 'red';
+  if(speedUp == 2){
+    baseTick -= 1;
+    shiftSpeed -= 1;
+    speedUp = 0;
+    console.log('base', baseTick);
   }
 
-  console.log(level);
+  // // Начал реализовывать логику синего яблока
+  // if(food.length >  1 && food.length % 2)
+  //   colorFood = 'blue'; 
+  // else 
+  //   colorFood = 'red';
 
   if (listCount >= food.length) return;
   const f = food[listCount];
@@ -281,6 +283,7 @@ function eatFood() {
     const last = snake[snake.length -1];
     snake.push({x: last.x, y: last.y});
     listCount++;
+    speedUp++;
     eatInSnake = true;
     eatHere = 1;
     // Eat position logic
