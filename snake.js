@@ -1,7 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const h1 = document.getElementById('h1');
 const count = document.getElementById('count');
+const extra = document.getElementById('extra');
 
 // Time
 let baseTick = 100;
@@ -232,24 +232,18 @@ document.addEventListener('keyup', (e) => {
 // Food
 let listCount = 0;
 let speedUp = 0;
-let food = [{x: 100, y: 100, width: 5, height: 5, color: 'red'}];
+let food = [{x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'red'}];
+let extraFood = [{x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen'}];
 let eatInSnake = false;
 let eatHere = 1;
-let colorFood = 'red'
+let colorFood = 'red';
 
 function drawFood() {
   if(speedUp == 2){
-    baseTick -= 1;
-    shiftSpeed -= 1;
+    baseTick -= 0.5;
+    shiftSpeed -= 0.5;
     speedUp = 0;
-    console.log('base', baseTick);
-  }
-
-  // // Начал реализовывать логику синего яблока
-  // if(food.length >  1 && food.length % 2)
-  //   colorFood = 'blue'; 
-  // else 
-  //   colorFood = 'red';
+  } 
 
   if (listCount >= food.length) return;
   const f = food[listCount];
@@ -276,6 +270,35 @@ function drawFood() {
   ctx.ellipse(cx + 2, cy - r - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
   ctx.fillStyle = '#2e7d32';
   ctx.fill();
+
+  // Теперь бонусное яблоко появляется, но не сьедается
+  if(listCount == 2) {
+  const df = extraFood[0];
+  const dcx = df.x + df.width/2;
+  const dcy = df.y + df.height/2;
+  const dr = df.width/2;
+  // Apple body
+  ctx.beginPath();
+  ctx.arc(dcx, dcy, dr, 0, Math.PI * 2);
+  ctx.fillStyle = df.color;
+  ctx.fill();
+  ctx.strokeStyle = df.color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Stem
+  ctx.beginPath();
+  ctx.moveTo(dcx, dcy - dr);
+  ctx.lineTo(dcx + 1, dcy - dr - 2);
+  ctx.strokeStyle = '#4a2f1a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  // Leaf
+  ctx.beginPath();  
+  ctx.ellipse(dcx + 2, dcy - dr - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#2e7d32';
+  ctx.fill();
+  }
+
 }
 
 function eatFood() {
@@ -297,6 +320,7 @@ function eatFood() {
   }
   // Count 
     count.textContent = "Счёт = " + listCount;
+    extra.textContent = "Бонус = ";
 }
 
 function clearCanvas() {
