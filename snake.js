@@ -272,7 +272,7 @@ function drawFood() {
   ctx.fill();
 
   // Теперь бонусное яблоко появляется, но не сьедается
-  if(listCount == 2) {
+  if(listCount == 0) {
   const df = extraFood[0];
   const dcx = df.x + df.width/2;
   const dcy = df.y + df.height/2;
@@ -302,6 +302,7 @@ function drawFood() {
 }
 
 function eatFood() {
+  let horizontal, vertical, overlap;
   if(snake[0].x === food[listCount].x && snake[0].y === food[listCount].y) {
     const last = snake[snake.length -1];
     snake.push({x: last.x, y: last.y});
@@ -310,7 +311,23 @@ function eatFood() {
     eatInSnake = true;
     eatHere = 1;
     // Eat position logic
-    let horizontal, vertical, overlap;
+    do {
+      horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
+      vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
+      overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
+    } while (overlap);
+    food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
+  }
+
+  if(snake[0].x === extraFood[0].x && snake[0].y === extraFood[0].y){
+    // Extra time start
+    startExtraTime = Date.now();
+    countdown();
+    //
+    const last = snake[snake.length -1];
+    snake.push({x: last.x, y: last.y});
+    listCount++;
+    speedUp++;
     do {
       horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
       vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
@@ -320,7 +337,18 @@ function eatFood() {
   }
   // Count 
     count.textContent = "Счёт = " + listCount;
-    extra.textContent = "Бонус = ";
+    extra.textContent = "Бонус = " + exScTi;
+}
+
+let startExtraTime;
+let exScTi = 0; // extraScreenTime
+
+function countdown() { // Обратный отсчет екстра времени
+    const now = Date.now();
+    const elapsed = (now - startExtraTime) / 1000;
+    const remaining = Math.max(0, 30 - elapsed);
+    if (remaining > 0) requestAnimationFrame(countdown);
+    exScTi = Math.ceil(remaining);
 }
 
 function clearCanvas() {
