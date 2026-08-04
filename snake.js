@@ -317,8 +317,19 @@ function eatFood() {
       overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
     } while (overlap);
     food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
-  }
 
+    if(exScTi != 0){
+      const last = snake[snake.length -1];
+      snake.push({x: last.x, y: last.y});
+      listCount++;
+      do {
+        horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
+        vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
+        overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
+      } while (overlap);
+      food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
+    }
+  }
   if(snake[0].x === extraFood[0].x && snake[0].y === extraFood[0].y){
     // Extra time start
     startExtraTime = Date.now();
@@ -334,6 +345,12 @@ function eatFood() {
       overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
     } while (overlap);
     food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
+    do {
+      horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
+      vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
+      overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
+    } while (overlap);
+    extraFood.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
   }
   // Count 
     count.textContent = "Счёт = " + listCount;
@@ -363,6 +380,7 @@ function gameLoop(time) {
       drawSnake();
       drawFood();
       eatFood();
+      console.log(extraFood);
   }
   requestAnimationFrame(gameLoop);
 }
