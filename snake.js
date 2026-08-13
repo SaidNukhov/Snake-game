@@ -230,8 +230,8 @@ document.addEventListener('keyup', (e) => {
 })
 
 // Food
-let listCount = 0;
-let speedUp = 0;
+let listCount = 0; extraCount = 0;
+let speedUp = 0; extraSpawn = 0;
 let food = [{x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'red'}];
 let extraFood = [{x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen'}];
 let eatInSnake = false;
@@ -272,8 +272,8 @@ function drawFood() {
   ctx.fill();
 
   // Теперь бонусное яблоко появляется, но не сьедается
-  if(listCount == 0) {
-  const df = extraFood[0];
+  if(extraSpawn == 10) {
+  const df = extraFood[extraCount];
   const dcx = df.x + df.width/2;
   const dcy = df.y + df.height/2;
   const dr = df.width/2;
@@ -307,7 +307,9 @@ function eatFood() {
     const last = snake[snake.length -1];
     snake.push({x: last.x, y: last.y});
     listCount++;
-    speedUp++;
+    speedUp++; extraSpawn++;
+    if(extraSpawn > 10)
+      extraSpawn = 1    ;
     eatInSnake = true;
     eatHere = 1;
     // Eat position logic
@@ -330,7 +332,7 @@ function eatFood() {
       food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
     }
   }
-  if(snake[0].x === extraFood[0].x && snake[0].y === extraFood[0].y){
+  if(snake[0].x === extraFood[extraCount].x && snake[0].y === extraFood[extraCount].y && extraSpawn == 10){
     // Extra time start
     startExtraTime = Date.now();
     countdown();
@@ -338,19 +340,15 @@ function eatFood() {
     const last = snake[snake.length -1];
     snake.push({x: last.x, y: last.y});
     listCount++;
-    speedUp++;
+    extraCount++;
+    speedUp++; extraSpawn = 0;
     do {
       horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
       vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
       overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
     } while (overlap);
     food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
-    do {
-      horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
-      vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
-      overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
-    } while (overlap);
-    extraFood.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
+    extraFood.push({x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen'});
   }
   // Count 
     count.textContent = "Счёт = " + listCount;
@@ -380,7 +378,7 @@ function gameLoop(time) {
       drawSnake();
       drawFood();
       eatFood();
-      console.log(extraFood);
+      console.log(extraFood, snake[0]);
   }
   requestAnimationFrame(gameLoop);
 }
