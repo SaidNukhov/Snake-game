@@ -55,8 +55,8 @@ function drawSnake() {
     }
 
     if (eatInSnake && eatHere === index) {
-      w += 4;
-      h += 4;
+      w += 2;
+      h += 2;
       eatHere++;
       
     }
@@ -277,7 +277,7 @@ function drawFood() {
     //
     if(ghostTime == 0)
       extraSpawn = 0;
-    if(ghostTime > 4 || ghostTime == 3.5 || ghostTime == 3 || ghostTime == 2.5 || ghostTime == 2 || ghostTime == 1.8 || ghostTime == 1.6 || ghostTime == 1.4 || ghostTime == 1.2 || ghostTime == 1 || ghostTime == 0.8 || ghostTime == 0.6 || ghostTime == 0.5 || ghostTime == 0.4 || ghostTime == 0.3 || ghostTime == 0.2 || ghostTime == 0.1){
+    if(ghostTime == 5 || ghostTime == 3 || ghostTime == 1){
       const df = extraFood[extraCount];
       const dcx = df.x + df.width/2;
       const dcy = df.y + df.height/2;
@@ -355,9 +355,8 @@ function eatFood() {
     extra.textContent = "Бонус = " + exScTi;
 }
 
-let startExtraTime; let startAppleGhost;
-let exScTi = 0; // extraScreenTime
-let ghostTime = 0; 
+let startExtraTime; let exScTi = 0; // extraScreenTime 
+let startAppleGhost; let ghostTime = 0; // apple time out 
 
 function countdown() { // Обратный отсчет экстра времени
   const now = Date.now();
@@ -372,7 +371,7 @@ function countghost() { // Мерцание экстра яблока
   const elapsed = (now - startAppleGhost) / 1000;
   const remaining = Math.max(0, 5 - elapsed);
   if (remaining > 0) requestAnimationFrame(countghost);
-  ghostTime = remaining;
+  ghostTime = Math.ceil(remaining);
 }
 
 function clearCanvas() {
