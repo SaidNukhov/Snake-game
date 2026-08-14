@@ -234,7 +234,7 @@ let listCount = 0; extraCount = 0;
 let speedUp = 0; extraSpawn = 0;
 let food = [{x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'red'}];
 let extraFood = [{x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen'}];
-let eatInSnake = false;
+let eatInSnake = false; let extraStartTime = true;
 let eatHere = 1;
 let colorFood = 'red';
 
@@ -271,12 +271,13 @@ function drawFood() {
     ctx.fillStyle = '#2e7d32';
     ctx.fill();
 
-  // Теперь бонусное яблоко появляется, но не сьедается
-  if(extraSpawn == 10) {н
-    startAppleGhost = Date.now(); // Нужно чтобы это срабатывало только 1 раз, здесь это обновляетсяв раз в 100мс
-    countghost();
-    console.log(ghostTime);
-    if(ghostTime > 0){
+  if(extraSpawn == 10) {
+    // Start time countghost
+    if(extraStartTime == true){startAppleGhost = Date.now(); countghost(); extraStartTime = false;}
+    //
+    if(ghostTime == 0)
+      extraSpawn = 0;
+    if(ghostTime > 4 || ghostTime == 3.5 || ghostTime == 3 || ghostTime == 2.5 || ghostTime == 2 || ghostTime == 1.8 || ghostTime == 1.6 || ghostTime == 1.4 || ghostTime == 1.2 || ghostTime == 1 || ghostTime == 0.8 || ghostTime == 0.6 || ghostTime == 0.5 || ghostTime == 0.4 || ghostTime == 0.3 || ghostTime == 0.2 || ghostTime == 0.1){
       const df = extraFood[extraCount];
       const dcx = df.x + df.width/2;
       const dcy = df.y + df.height/2;
@@ -310,12 +311,9 @@ function eatFood() {
   if(snake[0].x === food[listCount].x && snake[0].y === food[listCount].y) {
     const last = snake[snake.length -1];
     snake.push({x: last.x, y: last.y});
-    listCount++;
-    speedUp++; extraSpawn++;
+    listCount++; speedUp++; extraSpawn++; extraStartTime = true; eatInSnake = true; eatHere = 1;
     if(extraSpawn > 10)
-      extraSpawn = 1    ;
-    eatInSnake = true;
-    eatHere = 1;
+      extraSpawn = 1;
     // Eat position logic
     do {
       horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
@@ -343,9 +341,7 @@ function eatFood() {
     //
     const last = snake[snake.length -1];
     snake.push({x: last.x, y: last.y});
-    listCount++;
-    extraCount++;
-    speedUp++; extraSpawn = 0;
+    listCount++; extraCount++; speedUp++; extraSpawn = 0;
     do {
       horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
       vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
@@ -376,7 +372,7 @@ function countghost() { // Мерцание экстра яблока
   const elapsed = (now - startAppleGhost) / 1000;
   const remaining = Math.max(0, 5 - elapsed);
   if (remaining > 0) requestAnimationFrame(countghost);
-  ghostTime = Math.ceil(remaining);
+  ghostTime = remaining;
 }
 
 function clearCanvas() {
