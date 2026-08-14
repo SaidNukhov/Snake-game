@@ -246,59 +246,63 @@ function drawFood() {
   } 
 
   if (listCount >= food.length) return;
-  const f = food[listCount];
-  const cx = f.x + f.width/2;
-  const cy = f.y + f.height/2;
-  const r = f.width/2;
-  // Apple body
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = colorFood;
-  ctx.fill();
-  ctx.strokeStyle = colorFood;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  // Stem
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - r);
-  ctx.lineTo(cx + 1, cy - r - 2);
-  ctx.strokeStyle = '#4a2f1a';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  // Leaf
-  ctx.beginPath();  
-  ctx.ellipse(cx + 2, cy - r - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
-  ctx.fillStyle = '#2e7d32';
-  ctx.fill();
+    const f = food[listCount];
+    const cx = f.x + f.width/2;
+    const cy = f.y + f.height/2;
+    const r = f.width/2;
+    // Apple body
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = colorFood;
+    ctx.fill();
+    ctx.strokeStyle = colorFood;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Stem
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r);
+    ctx.lineTo(cx + 1, cy - r - 2);
+    ctx.strokeStyle = '#4a2f1a';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // Leaf
+    ctx.beginPath();  
+    ctx.ellipse(cx + 2, cy - r - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#2e7d32';
+    ctx.fill();
 
   // Теперь бонусное яблоко появляется, но не сьедается
-  if(extraSpawn == 10) {
-  const df = extraFood[extraCount];
-  const dcx = df.x + df.width/2;
-  const dcy = df.y + df.height/2;
-  const dr = df.width/2;
-  // Apple body
-  ctx.beginPath();
-  ctx.arc(dcx, dcy, dr, 0, Math.PI * 2);
-  ctx.fillStyle = df.color;
-  ctx.fill();
-  ctx.strokeStyle = df.color;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  // Stem
-  ctx.beginPath();
-  ctx.moveTo(dcx, dcy - dr);
-  ctx.lineTo(dcx + 1, dcy - dr - 2);
-  ctx.strokeStyle = '#4a2f1a';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  // Leaf
-  ctx.beginPath();  
-  ctx.ellipse(dcx + 2, dcy - dr - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
-  ctx.fillStyle = '#2e7d32';
-  ctx.fill();
+  if(extraSpawn == 10) {н
+    startAppleGhost = Date.now(); // Нужно чтобы это срабатывало только 1 раз, здесь это обновляетсяв раз в 100мс
+    countghost();
+    console.log(ghostTime);
+    if(ghostTime > 0){
+      const df = extraFood[extraCount];
+      const dcx = df.x + df.width/2;
+      const dcy = df.y + df.height/2;
+      const dr = df.width/2;
+      // Apple body
+      ctx.beginPath();
+      ctx.arc(dcx, dcy, dr, 0, Math.PI * 2);
+      ctx.fillStyle = df.color;
+      ctx.fill();
+      ctx.strokeStyle = df.color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Stem
+      ctx.beginPath();
+      ctx.moveTo(dcx, dcy - dr);
+      ctx.lineTo(dcx + 1, dcy - dr - 2);
+      ctx.strokeStyle = '#4a2f1a';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      // Leaf
+      ctx.beginPath();  
+      ctx.ellipse(dcx + 2, dcy - dr - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#2e7d32';
+      ctx.fill();
+    }
   }
-
 }
 
 function eatFood() {
@@ -355,15 +359,24 @@ function eatFood() {
     extra.textContent = "Бонус = " + exScTi;
 }
 
-let startExtraTime;
+let startExtraTime; let startAppleGhost;
 let exScTi = 0; // extraScreenTime
+let ghostTime = 0; 
 
-function countdown() { // Обратный отсчет екстра времени
-    const now = Date.now();
-    const elapsed = (now - startExtraTime) / 1000;
-    const remaining = Math.max(0, 30 - elapsed);
-    if (remaining > 0) requestAnimationFrame(countdown);
-    exScTi = Math.ceil(remaining);
+function countdown() { // Обратный отсчет экстра времени
+  const now = Date.now();
+  const elapsed = (now - startExtraTime) / 1000;
+  const remaining = Math.max(0, 30 - elapsed);
+  if (remaining > 0) requestAnimationFrame(countdown);
+  exScTi = Math.ceil(remaining);
+}
+
+function countghost() { // Мерцание экстра яблока
+  const now = Date.now();
+  const elapsed = (now - startAppleGhost) / 1000;
+  const remaining = Math.max(0, 5 - elapsed);
+  if (remaining > 0) requestAnimationFrame(countghost);
+  ghostTime = Math.ceil(remaining);
 }
 
 function clearCanvas() {
@@ -378,7 +391,7 @@ function gameLoop(time) {
       drawSnake();
       drawFood();
       eatFood();
-      console.log(extraFood, snake[0]);
+      // console.log(extraFood, snake[0]);
   }
   requestAnimationFrame(gameLoop);
 }
