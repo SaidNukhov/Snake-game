@@ -292,7 +292,7 @@ function drawFood() {
       ctx.stroke();
       // Stem
       ctx.beginPath();
-      ctx.moveTo(dcx, dcy - dr);
+      ctx.moveTo(dcx, dcy - dr);   
       ctx.lineTo(dcx + 1, dcy - dr - 2);
       ctx.strokeStyle = '#4a2f1a';
       ctx.lineWidth = 1;

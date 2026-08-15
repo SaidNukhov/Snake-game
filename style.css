@@ -66,3 +66,20 @@ html {
 body {
   margin: 0;
 }
+
+@media(max-width: 1000px){
+  body{
+    grid-template-rows: 5% 95%;   
+  }
+  #gameCanvas{
+    width: 90vw;
+    height: 90vh;
+  }
+  /*Font*/
+  .h1{
+    font-size: 20px;
+  }
+  .h2{
+    font-size: 50%;
+  }
+}
