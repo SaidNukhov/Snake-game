@@ -38,6 +38,10 @@ body {
   width: 20vw;
 }
 
+#joystick-zone{
+  display: none;  
+}
+
 .h1 {
   color: yellowgreen;
   font-size: 90px;
@@ -80,6 +84,7 @@ body {
     height: 90vh;
   }
   #joystick-zone {
+      display: block;
       position: fixed;
       bottom: 5vh;
       left: 80vw;

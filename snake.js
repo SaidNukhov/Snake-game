@@ -413,7 +413,6 @@ function gameLoop(time) {
     drawSnake();
     drawFood();
     eatFood();
-    // console.log(extraFood, snake[0]);
   }
   requestAnimationFrame(gameLoop);
 }
