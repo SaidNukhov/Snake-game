@@ -2,7 +2,34 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const count = document.getElementById('count');
 const extra = document.getElementById('extra');
+const joystick = nipplejs.create({
+  zone: document.getElementById('joystick-zone'),
+  mode: 'static',
+  position: { left: '50%', bottom: '50%' },
+  color: 'white',
+  size: 120,
+  restJoystick: true,
+});
+joystick.on('move', (evt, data) => {
+  if (!data.direction) return;
 
+  const x = data.direction.x;
+  const y = data.direction.y;
+  const threshold = 0.3;
+  if (Math.abs(x) > Math.abs(y)) {
+    if (x > threshold && currentDirection !== "L") {
+      moveWay = "R";
+    } else if (x < -threshold && currentDirection !== "R") {
+      moveWay = "L";
+    }
+  } else {
+    if (y > threshold && currentDirection !== "D") {
+      moveWay = "U";
+    } else if (y < -threshold && currentDirection !== "U") {
+      moveWay = "D";
+    }
+  }
+});
 // Time
 let baseTick = 100;
 let tick = 100;
@@ -14,7 +41,7 @@ let shiftSpeed = 50;
 // Size 
 let horizontalSize = 5, verticalSize = 5;
 let snake = [
-  {x: 130, y: 80} // Head
+  { x: 130, y: 80 } // Head
 ]
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -58,7 +85,7 @@ function drawSnake() {
       w += 2;
       h += 2;
       eatHere++;
-      
+
     }
 
     const x = segment.x + (horizontalSize - w) / 2;
@@ -90,95 +117,95 @@ function drawSnake() {
           ex1 = segment.x + 3; ey1 = segment.y + 1;
           ex2 = segment.x + 3; ey2 = segment.y + 3;
           break;
-        }
+      }
       ctx.fillRect(ex1, ey1, eyeSize, eyeSize);
       ctx.fillRect(ex2, ey2, eyeSize, eyeSize);
       ctx.fillStyle = 'black';
       ctx.fillRect(ex1 + 0.5, ey1 + 0.5, 0.5, 0.5);
       ctx.fillRect(ex2 + 0.5, ey2 + 0.5, 0.5, 0.5);
-        }
+    }
   });
   eatInSnake = false;
 }
 
 // Move
-let currentDirection = "U"; 
+let currentDirection = "U";
 let moveWay = "U";
 
 function updateSnakePosition() {
 
-function turnLeft() {
-  if(currentDirection !== "R") {
-    let head = snake[0];
-    let newSnake = [];
-    newSnake.push({x: head.x - horizontalSize, y: head.y});
-    for(i = 0; i < snake.length - 1; i++) {
-      newSnake.push(snake[i]);
+  function turnLeft() {
+    if (currentDirection !== "R") {
+      let head = snake[0];
+      let newSnake = [];
+      newSnake.push({ x: head.x - horizontalSize, y: head.y });
+      for (i = 0; i < snake.length - 1; i++) {
+        newSnake.push(snake[i]);
+      }
+      snake = newSnake;
+      currentDirection = "L";
     }
-    snake = newSnake;
-    currentDirection = "L";
   }
-}
-function turnRight() {
-  if(currentDirection !== "L"){   
-    let head = snake[0];
-    let newSnake = [];
-    newSnake.push({x: head.x + horizontalSize, y: head.y});
-    for(i = 0; i < snake.length - 1; i++) {
-      newSnake.push(snake[i]);
+  function turnRight() {
+    if (currentDirection !== "L") {
+      let head = snake[0];
+      let newSnake = [];
+      newSnake.push({ x: head.x + horizontalSize, y: head.y });
+      for (i = 0; i < snake.length - 1; i++) {
+        newSnake.push(snake[i]);
+      }
+      snake = newSnake;
+      currentDirection = "R";
     }
-    snake = newSnake;
-    currentDirection = "R";
   }
-}
-function turnUp() {
-  if(currentDirection !== "D"){
-    let head = snake[0];
-    let newSnake = [];
-    newSnake.push({x: head.x, y: head.y - verticalSize});
-    for(i = 0; i < snake.length - 1; i++) {
-      newSnake.push(snake[i]);
+  function turnUp() {
+    if (currentDirection !== "D") {
+      let head = snake[0];
+      let newSnake = [];
+      newSnake.push({ x: head.x, y: head.y - verticalSize });
+      for (i = 0; i < snake.length - 1; i++) {
+        newSnake.push(snake[i]);
+      }
+      snake = newSnake;
+      currentDirection = "U";
     }
-    snake = newSnake;
-    currentDirection = "U";
   }
-}
-function turnDown() {
-  if(currentDirection !== "U"){
-    let head = snake[0];
-    let newSnake = [];
-    newSnake.push({x: head.x, y: head.y + verticalSize});
-    for(i = 0; i < snake.length - 1; i++) {
-      newSnake.push(snake[i]);
+  function turnDown() {
+    if (currentDirection !== "U") {
+      let head = snake[0];
+      let newSnake = [];
+      newSnake.push({ x: head.x, y: head.y + verticalSize });
+      for (i = 0; i < snake.length - 1; i++) {
+        newSnake.push(snake[i]);
+      }
+      snake = newSnake;
+      currentDirection = "D";
     }
-    snake = newSnake;
-    currentDirection = "D";
   }
-}
-// Game over
-  if(snake.length > 2){
-    for(let i=1;i<snake.length;i++){
-      if(snake[0].x === snake[i].x && snake[0].y === snake[i].y){
+  // Game over
+  if (snake.length > 2) {
+    for (let i = 1; i < snake.length; i++) {
+      if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
         alert("Game Over");
-        location.reload(); 
+        location.reload();
       }
     }
   };
 
   switch (moveWay) {
-  case "U":
+    case "U":
       turnUp();
-    break;
-  case "D":
-    turnDown();
-    break;
-  case "L":
-    turnLeft();
-    break;
-  case "R":
-    turnRight();
-    break;
-  default:
+      break;
+    case "D":
+      turnDown();
+      break;
+    case "L":
+      turnLeft();
+      break;
+    case "R":
+      turnRight();
+      break;
+    default:
       break;
   };
 
@@ -194,37 +221,37 @@ function turnDown() {
 
 document.addEventListener('keydown', (event) => {
   switch (event.key) {
-    case 'ArrowUp' :
-      if(currentDirection !== "D"){
+    case 'ArrowUp':
+      if (currentDirection !== "D") {
         moveWay = "U";
       };
       break;
-    case 'ArrowDown' :
-      if(currentDirection !== "U"){
+    case 'ArrowDown':
+      if (currentDirection !== "U") {
         moveWay = "D";
       };
       break;
-    case 'ArrowLeft' :
-      if(currentDirection !== "R"){
+    case 'ArrowLeft':
+      if (currentDirection !== "R") {
         moveWay = "L";
       };
       break;
-    case 'ArrowRight' :
-      if(currentDirection !== "L"){
+    case 'ArrowRight':
+      if (currentDirection !== "L") {
         moveWay = "R";
       }
       break;
-    }
   }
+}
 );
 // Shift
 document.addEventListener('keydown', (e) => {
-  if(e.key === 'Shift'){
+  if (e.key === 'Shift') {
     tick = shiftSpeed;
   }
 })
 document.addEventListener('keyup', (e) => {
-  if(e.key === 'Shift'){
+  if (e.key === 'Shift') {
     tick = baseTick;
   }
 })
@@ -232,56 +259,56 @@ document.addEventListener('keyup', (e) => {
 // Food
 let listCount = 0; extraCount = 0;
 let speedUp = 0; extraSpawn = 0;
-let food = [{x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'red'}];
-let extraFood = [{x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen'}];
+let food = [{ x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'red' }];
+let extraFood = [{ x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen' }];
 let eatInSnake = false; let extraStartTime = true;
 let eatHere = 1;
 let colorFood = 'red';
 
 function drawFood() {
-  if(speedUp == 2){
+  if (speedUp == 2) {
     baseTick -= 0.5;
     shiftSpeed -= 0.5;
     speedUp = 0;
-  } 
+  }
 
   if (listCount >= food.length) return;
-    const f = food[listCount];
-    const cx = f.x + f.width/2;
-    const cy = f.y + f.height/2;
-    const r = f.width/2;
-    // Apple body
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = colorFood;
-    ctx.fill();
-    ctx.strokeStyle = colorFood;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    // Stem
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - r);
-    ctx.lineTo(cx + 1, cy - r - 2);
-    ctx.strokeStyle = '#4a2f1a';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    // Leaf
-    ctx.beginPath();  
-    ctx.ellipse(cx + 2, cy - r - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#2e7d32';
-    ctx.fill();
+  const f = food[listCount];
+  const cx = f.x + f.width / 2;
+  const cy = f.y + f.height / 2;
+  const r = f.width / 2;
+  // Apple body
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = colorFood;
+  ctx.fill();
+  ctx.strokeStyle = colorFood;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Stem
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - r);
+  ctx.lineTo(cx + 1, cy - r - 2);
+  ctx.strokeStyle = '#4a2f1a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  // Leaf
+  ctx.beginPath();
+  ctx.ellipse(cx + 2, cy - r - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
+  ctx.fillStyle = '#2e7d32';
+  ctx.fill();
 
-  if(extraSpawn == 10) {
+  if (extraSpawn == 10) {
     // Start time countghost
-    if(extraStartTime == true){startAppleGhost = Date.now(); countghost(); extraStartTime = false;}
+    if (extraStartTime == true) { startAppleGhost = Date.now(); countghost(); extraStartTime = false; }
     //
-    if(ghostTime == 0)
+    if (ghostTime == 0)
       extraSpawn = 0;
-    if(ghostTime == 5 || ghostTime == 3 || ghostTime == 1){
+    if (ghostTime == 5 || ghostTime == 3 || ghostTime == 1) {
       const df = extraFood[extraCount];
-      const dcx = df.x + df.width/2;
-      const dcy = df.y + df.height/2;
-      const dr = df.width/2;
+      const dcx = df.x + df.width / 2;
+      const dcy = df.y + df.height / 2;
+      const dr = df.width / 2;
       // Apple body
       ctx.beginPath();
       ctx.arc(dcx, dcy, dr, 0, Math.PI * 2);
@@ -292,13 +319,13 @@ function drawFood() {
       ctx.stroke();
       // Stem
       ctx.beginPath();
-      ctx.moveTo(dcx, dcy - dr);   
+      ctx.moveTo(dcx, dcy - dr);
       ctx.lineTo(dcx + 1, dcy - dr - 2);
       ctx.strokeStyle = '#4a2f1a';
       ctx.lineWidth = 1;
       ctx.stroke();
       // Leaf
-      ctx.beginPath();  
+      ctx.beginPath();
       ctx.ellipse(dcx + 2, dcy - dr - 2, 1.5, 0.8, 0.5, 0, Math.PI * 2);
       ctx.fillStyle = '#2e7d32';
       ctx.fill();
@@ -308,11 +335,11 @@ function drawFood() {
 
 function eatFood() {
   let horizontal, vertical, overlap;
-  if(snake[0].x === food[listCount].x && snake[0].y === food[listCount].y) {
-    const last = snake[snake.length -1];
-    snake.push({x: last.x, y: last.y});
+  if (snake[0].x === food[listCount].x && snake[0].y === food[listCount].y) {
+    const last = snake[snake.length - 1];
+    snake.push({ x: last.x, y: last.y });
     listCount++; speedUp++; extraSpawn++; extraStartTime = true; eatInSnake = true; eatHere = 1;
-    if(extraSpawn > 10)
+    if (extraSpawn > 10)
       extraSpawn = 1;
     // Eat position logic
     do {
@@ -320,39 +347,39 @@ function eatFood() {
       vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
       overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
     } while (overlap);
-    food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
+    food.push({ x: horizontal, y: vertical, width: horizontalSize, height: verticalSize });
 
-    if(exScTi != 0){
-      const last = snake[snake.length -1];
-      snake.push({x: last.x, y: last.y});
+    if (exScTi != 0) {
+      const last = snake[snake.length - 1];
+      snake.push({ x: last.x, y: last.y });
       listCount++;
       do {
         horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
         vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
         overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
       } while (overlap);
-      food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
+      food.push({ x: horizontal, y: vertical, width: horizontalSize, height: verticalSize });
     }
   }
-  if(snake[0].x === extraFood[extraCount].x && snake[0].y === extraFood[extraCount].y && extraSpawn == 10){
+  if (snake[0].x === extraFood[extraCount].x && snake[0].y === extraFood[extraCount].y && extraSpawn == 10) {
     // Extra time start
     startExtraTime = Date.now();
     countdown();
     //
-    const last = snake[snake.length -1];
-    snake.push({x: last.x, y: last.y});
+    const last = snake[snake.length - 1];
+    snake.push({ x: last.x, y: last.y });
     listCount++; extraCount++; speedUp++; extraSpawn = 0;
     do {
       horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
       vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
       overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
     } while (overlap);
-    food.push({x: horizontal, y: vertical, width: horizontalSize, height: verticalSize});
-    extraFood.push({x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen'});
+    food.push({ x: horizontal, y: vertical, width: horizontalSize, height: verticalSize });
+    extraFood.push({ x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen' });
   }
   // Count 
-    count.textContent = "Счёт = " + listCount;
-    extra.textContent = "Бонус = " + exScTi;
+  count.textContent = "Счёт = " + listCount;
+  extra.textContent = "Бонус = " + exScTi;
 }
 
 let startExtraTime; let exScTi = 0; // extraScreenTime 
@@ -379,14 +406,14 @@ function clearCanvas() {
 }
 
 function gameLoop(time) {
-  if(time-lastUpdate >= tick){
+  if (time - lastUpdate >= tick) {
     lastUpdate = time;
-      clearCanvas();
-      updateSnakePosition();
-      drawSnake();
-      drawFood();
-      eatFood();
-      // console.log(extraFood, snake[0]);
+    clearCanvas();
+    updateSnakePosition();
+    drawSnake();
+    drawFood();
+    eatFood();
+    // console.log(extraFood, snake[0]);
   }
   requestAnimationFrame(gameLoop);
 }

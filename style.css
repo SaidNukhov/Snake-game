@@ -41,7 +41,7 @@ body {
 .h1 {
   color: yellowgreen;
   font-size: 90px;
-  font-family:'Times New Roman', Times, serif;
+  font-family: 'Times New Roman', Times, serif;
   font-weight: 1000;
   font-variant: small-caps;
   text-shadow: 0 8px 8px black;
@@ -51,7 +51,7 @@ body {
   color: white;
 }
 
-/*0 styles*/ 
+/*0 styles*/
 * {
   margin: 0;
   padding: 0;
@@ -67,23 +67,35 @@ body {
   margin: 0;
 }
 
-@media(max-width: 1000px){
-  body{
-    grid-template-rows: 5% 90%;   
+@media(max-width: 1000px) {
+  body {
+    grid-template-rows: 5% 90%;
   }
-  .information{
+  .information {
     flex-direction: row;
-    justify-content: center;      
+    justify-content: center;
   }
-  #gameCanvas{
+  #gameCanvas {
     width: 95vw;
     height: 90vh;
   }
+  #joystick-zone {
+      position: fixed;
+      bottom: 5vh;
+      left: 80vw;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      touch-action: none;
+      z-index: 1000;
+    }
   /*Font*/
-  .h1{
+  .h1 {
     font-size: 20px;
   }
-  #count, #extra{
+  #count, #extra {
     font-size: 12px;
   }
 }
