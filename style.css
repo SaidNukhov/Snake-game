@@ -69,11 +69,11 @@ body {
 
 @media(max-width: 1000px){
   body{
-    grid-template-rows: 5% 95%;   
+    grid-template-rows: 10% 90%;   
   }
   #gameCanvas{
     width: 90vw;
-    height: 90vh;
+    height: 70vh;
   }
   /*Font*/
   .h1{
