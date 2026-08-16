@@ -38,10 +38,6 @@ body {
   width: 20vw;
 }
 
-#joystick-zone{
-  display: none;  
-}
-
 .h1 {
   color: yellowgreen;
   font-size: 90px;
@@ -54,6 +50,61 @@ body {
 #count, #extra {
   color: white;
 }
+
+/* Крестовина — видна только на мобильных */
+.dpad_1 {
+  position: fixed;
+  bottom: -5vh;
+  left: 2.7vw;
+  display: none; /* скрыта по умолчанию */
+  grid-template-columns: 40px 40px 40px;
+  grid-template-rows: 40px 40px 40px;
+  gap: 4px;
+  touch-action: none;
+  z-index: 9999;
+}
+
+.dpad_2 {
+  position: fixed;
+  bottom: 5vh;
+  left: 83vw;
+  display: none; /* скрыта по умолчанию */
+  grid-template-columns: 40px 40px 40px;
+  grid-template-rows: 40px 40px 40px;
+  gap: 4px;
+  touch-action: none;
+  z-index: 9999;
+}
+
+.dpad button {
+  font-size: 28px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.dpad button:active {
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(0.92);
+}
+
+/* Расположение кнопок */
+.dpad [data-dir="up"]    { grid-column: 2; grid-row: 1; }
+.dpad [data-dir="left"]  { grid-column: 1; grid-row: 2; }
+.dpad [data-dir="down"]  { grid-column: 2; grid-row: 3; }
+.dpad [data-dir="right"] { grid-column: 3; grid-row: 2; }
 
 /*0 styles*/
 * {
@@ -83,19 +134,9 @@ body {
     width: 95vw;
     height: 90vh;
   }
-  #joystick-zone {
-      display: block;
-      position: fixed;
-      bottom: 5vh;
-      left: 80vw;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      touch-action: none;
-      z-index: 1000;
-    }
+  .dpad {
+    display: grid;
+  }
   /*Font*/
   .h1 {
     font-size: 20px;

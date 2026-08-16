@@ -2,34 +2,6 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const count = document.getElementById('count');
 const extra = document.getElementById('extra');
-const joystick = nipplejs.create({
-  zone: document.getElementById('joystick-zone'),
-  mode: 'static',
-  position: { left: '50%', bottom: '50%' },
-  color: 'white',
-  size: 120,
-  restJoystick: true,
-});
-joystick.on('move', (evt, data) => {
-  if (!data.direction) return;
-
-  const x = data.direction.x;
-  const y = data.direction.y;
-  const threshold = 0.3;
-  if (Math.abs(x) > Math.abs(y)) {
-    if (x > threshold && currentDirection !== "L") {
-      moveWay = "R";
-    } else if (x < -threshold && currentDirection !== "R") {
-      moveWay = "L";
-    }
-  } else {
-    if (y > threshold && currentDirection !== "D") {
-      moveWay = "U";
-    } else if (y < -threshold && currentDirection !== "U") {
-      moveWay = "D";
-    }
-  }
-});
 // Time
 let baseTick = 100;
 let tick = 100;
@@ -139,7 +111,7 @@ function updateSnakePosition() {
       let head = snake[0];
       let newSnake = [];
       newSnake.push({ x: head.x - horizontalSize, y: head.y });
-      for (i = 0; i < snake.length - 1; i++) {
+      for (let i = 0; i < snake.length - 1; i++) {
         newSnake.push(snake[i]);
       }
       snake = newSnake;
@@ -151,7 +123,7 @@ function updateSnakePosition() {
       let head = snake[0];
       let newSnake = [];
       newSnake.push({ x: head.x + horizontalSize, y: head.y });
-      for (i = 0; i < snake.length - 1; i++) {
+      for (let i = 0; i < snake.length - 1; i++) {
         newSnake.push(snake[i]);
       }
       snake = newSnake;
@@ -163,7 +135,7 @@ function updateSnakePosition() {
       let head = snake[0];
       let newSnake = [];
       newSnake.push({ x: head.x, y: head.y - verticalSize });
-      for (i = 0; i < snake.length - 1; i++) {
+      for (let i = 0; i < snake.length - 1; i++) {
         newSnake.push(snake[i]);
       }
       snake = newSnake;
@@ -175,7 +147,7 @@ function updateSnakePosition() {
       let head = snake[0];
       let newSnake = [];
       newSnake.push({ x: head.x, y: head.y + verticalSize });
-      for (i = 0; i < snake.length - 1; i++) {
+      for (let i = 0; i < snake.length - 1; i++) {
         newSnake.push(snake[i]);
       }
       snake = newSnake;
@@ -254,7 +226,28 @@ document.addEventListener('keyup', (e) => {
   if (e.key === 'Shift') {
     tick = baseTick;
   }
-})
+}
+)
+
+document.querySelectorAll('.dpad button').forEach(btn => {
+  const dir = btn.dataset.dir;
+
+  const handleStart = (e) => {
+    e.preventDefault(); // предотвращаем скролл или выделение
+    // Меняем направление, как в клавиатурных обработчиках
+    switch (dir) {
+      case 'up':    if (currentDirection !== "D") moveWay = "U"; break;
+      case 'down':  if (currentDirection !== "U") moveWay = "D"; break;
+      case 'left':  if (currentDirection !== "R") moveWay = "L"; break;
+      case 'right': if (currentDirection !== "L") moveWay = "R"; break;
+    }
+  };
+
+  // Для мобильных устройств
+  btn.addEventListener('touchstart', handleStart, { passive: false });
+  // Для тестирования на десктопе (можно оставить)
+  btn.addEventListener('mousedown', handleStart);
+});
 
 // Food
 let listCount = 0; extraCount = 0;
