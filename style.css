@@ -54,34 +54,33 @@ body {
 /* Крестовина — видна только на мобильных */
 .dpad_1 {
   position: fixed;
-  bottom: -5vh;
-  left: 2.7vw;
+  bottom: 5vh;
   display: none; /* скрыта по умолчанию */
-  grid-template-columns: 40px 40px 40px;
-  grid-template-rows: 40px 40px 40px;
+  grid-template-columns: 2vw 7vw;
+  grid-template-rows: 15vh 15vh;
   gap: 4px;
   touch-action: none;
   z-index: 9999;
+  margin-right: 10vw;
 }
 
 .dpad_2 {
   position: fixed;
   bottom: 5vh;
-  left: 83vw;
   display: none; /* скрыта по умолчанию */
-  grid-template-columns: 40px 40px 40px;
-  grid-template-rows: 40px 40px 40px;
+  grid-template-columns: 0 7vw;
+  grid-template-rows: 0 15vh 15vh;
   gap: 4px;
   touch-action: none;
   z-index: 9999;
+  margin-left: 90vw;
 }
 
 .dpad button {
   font-size: 28px;
   border: none;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.01);
   color: white;
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
   touch-action: none;
@@ -102,9 +101,9 @@ body {
 
 /* Расположение кнопок */
 .dpad [data-dir="up"]    { grid-column: 2; grid-row: 1; }
-.dpad [data-dir="left"]  { grid-column: 1; grid-row: 2; }
+.dpad [data-dir="left"]  { grid-column: 2; grid-row: 2; }
 .dpad [data-dir="down"]  { grid-column: 2; grid-row: 3; }
-.dpad [data-dir="right"] { grid-column: 3; grid-row: 2; }
+.dpad [data-dir="right"] { grid-column: 2; grid-row: 2; }
 
 /*0 styles*/
 * {
