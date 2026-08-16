@@ -69,7 +69,7 @@ body {
   bottom: 5vh;
   display: none; /* скрыта по умолчанию */
   grid-template-columns: 0 7vw;
-  grid-template-rows: 0 15vh 15vh;
+  grid-template-rows: 15vh 15vh;
   gap: 4px;
   touch-action: none;
   z-index: 9999;
@@ -102,7 +102,7 @@ body {
 /* Расположение кнопок */
 .dpad [data-dir="up"]    { grid-column: 2; grid-row: 1; }
 .dpad [data-dir="left"]  { grid-column: 2; grid-row: 2; }
-.dpad [data-dir="down"]  { grid-column: 2; grid-row: 3; }
+.dpad [data-dir="down"]  { grid-column: 2; grid-row: 1; }
 .dpad [data-dir="right"] { grid-column: 2; grid-row: 2; }
 
 /*0 styles*/
