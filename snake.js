@@ -1,21 +1,35 @@
+// constants
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const count = document.getElementById('count');
 const extra = document.getElementById('extra');
+// lets
 // Time
 let baseTick = 100;
 let tick = 100;
 let lastUpdate = 0;
 let shiftSpeed = 50;
-
-
-// Snake
-// Size 
+// Extra TIme 
+let startExtraTime; let exScTi = 0; // extraScreenTime 
+let startAppleGhost; let ghostTime = 0; // apple time out 
+// Snake Size 
 let horizontalSize = 5, verticalSize = 5;
 let snake = [
   { x: 130, y: 80 } // Head
 ]
+// Move
+let moveWay = "U";
+// Food
+let listCount = 0; screenCount = 0; extraCount = 0;
+let speedUp = 0; extraSpawn = 0;
+let food = [{ x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'red' }];
+let extraFood = [{ x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen' }];
+let eatInSnake = false; let extraStartTime = true;
+let eatHere = 1;
+let colorFood = 'red';
+// lets
 
+//Snake Draw
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -29,8 +43,6 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
 }
-// Логика должна каждую отрисовку перемещать увелечение snake[eatHere] на следующий обьект массива snake
-// Мне нужно сделать так, чтобы eatHere увеличивался только на следующей итерации отрисовки, то-есть через кадр
 function drawSnake() {
   snake.forEach((segment, index) => {
     let w = horizontalSize;
@@ -59,7 +71,6 @@ function drawSnake() {
       eatHere++;
 
     }
-
     const x = segment.x + (horizontalSize - w) / 2;
     const y = segment.y + (verticalSize - h) / 2;
 
@@ -72,7 +83,7 @@ function drawSnake() {
       ctx.fillStyle = 'black';
       const eyeSize = 1;
       let ex1, ey1, ex2, ey2;
-      switch (currentDirection) {
+      switch (moveWay) {
         case 'U':
           ex1 = segment.x + 1; ey1 = segment.y + 1;
           ex2 = segment.x + 3; ey2 = segment.y + 1;
@@ -99,60 +110,24 @@ function drawSnake() {
   });
   eatInSnake = false;
 }
-
 // Move
-let currentDirection = "U";
-let moveWay = "U";
-
 function updateSnakePosition() {
+  function multiSide() {
+    let reversedir; let nowdir = moveWay; let head = snake[0]; let newSnake = [];
+      
+      if(nowdir == "U") 
+        newSnake.push({x: head.x, y: head.y - verticalSize});
+      else if(nowdir == "D") 
+        newSnake.push({x: head.x, y: head.y + verticalSize});
+      else if(nowdir == "R") 
+        newSnake.push({x: head.x + horizontalSize, y: head.y});
+      else if(nowdir == "L") 
+        newSnake.push({x: head.x - horizontalSize, y: head.y}); 
 
-  function turnLeft() {
-    if (currentDirection !== "R") {
-      let head = snake[0];
-      let newSnake = [];
-      newSnake.push({ x: head.x - horizontalSize, y: head.y });
-      for (let i = 0; i < snake.length - 1; i++) {
+      for(let i = 0; i < snake.length - 1; i++){
         newSnake.push(snake[i]);
       }
       snake = newSnake;
-      currentDirection = "L";
-    }
-  }
-  function turnRight() {
-    if (currentDirection !== "L") {
-      let head = snake[0];
-      let newSnake = [];
-      newSnake.push({ x: head.x + horizontalSize, y: head.y });
-      for (let i = 0; i < snake.length - 1; i++) {
-        newSnake.push(snake[i]);
-      }
-      snake = newSnake;
-      currentDirection = "R";
-    }
-  }
-  function turnUp() {
-    if (currentDirection !== "D") {
-      let head = snake[0];
-      let newSnake = [];
-      newSnake.push({ x: head.x, y: head.y - verticalSize });
-      for (let i = 0; i < snake.length - 1; i++) {
-        newSnake.push(snake[i]);
-      }
-      snake = newSnake;
-      currentDirection = "U";
-    }
-  }
-  function turnDown() {
-    if (currentDirection !== "U") {
-      let head = snake[0];
-      let newSnake = [];
-      newSnake.push({ x: head.x, y: head.y + verticalSize });
-      for (let i = 0; i < snake.length - 1; i++) {
-        newSnake.push(snake[i]);
-      }
-      snake = newSnake;
-      currentDirection = "D";
-    }
   }
   // Game over
   if (snake.length > 2) {
@@ -163,60 +138,54 @@ function updateSnakePosition() {
       }
     }
   };
-
-  switch (moveWay) {
+  switch (moveWay) { 
     case "U":
-      turnUp();
+      multiSide();
       break;
     case "D":
-      turnDown();
+      multiSide();
       break;
     case "L":
-      turnLeft();
+      multiSide();
       break;
     case "R":
-      turnRight();
+      multiSide();
       break;
     default:
       break;
   };
-
+  // Выход за границы поля
   let headX = snake[0].x;
   let headY = snake[0].y;
   if (headX >= canvas.width) headX = 0;
-  if (headX < 0) headX = canvas.width;
+  if (headX < 0) headX = canvas.width; // То есть обратной стороне canvas
   if (headY >= canvas.height) headY = 0;
   if (headY < 0) headY = canvas.height;
   snake[0].x = headX;
   snake[0].y = headY;
-}
-
+} // Конец UpdateSnakePosition
 document.addEventListener('keydown', (event) => {
   switch (event.key) {
     case 'ArrowUp':
-      if (currentDirection !== "D") {
+      if(moveWay !== "D")
         moveWay = "U";
-      };
       break;
     case 'ArrowDown':
-      if (currentDirection !== "U") {
+      if(moveWay !== "U")
         moveWay = "D";
-      };
       break;
     case 'ArrowLeft':
-      if (currentDirection !== "R") {
+      if(moveWay !== "R")
         moveWay = "L";
-      };
       break;
     case 'ArrowRight':
-      if (currentDirection !== "L") {
+      if(moveWay !== "L")
         moveWay = "R";
-      }
       break;
-  }
-}
+    }
+  } 
 );
-// Shift
+// Ускорение змейки на shift
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Shift') {
     tick = shiftSpeed;
@@ -228,7 +197,7 @@ document.addEventListener('keyup', (e) => {
   }
 }
 )
-
+// Крестовина для смартфонов
 document.querySelectorAll('.dpad button').forEach(btn => {
   const dir = btn.dataset.dir;
 
@@ -236,35 +205,24 @@ document.querySelectorAll('.dpad button').forEach(btn => {
     e.preventDefault(); // предотвращаем скролл или выделение
     // Меняем направление, как в клавиатурных обработчиках
     switch (dir) {
-      case 'up':    if (currentDirection !== "D") moveWay = "U"; break;
-      case 'down':  if (currentDirection !== "U") moveWay = "D"; break;
-      case 'left':  if (currentDirection !== "R") moveWay = "L"; break;
-      case 'right': if (currentDirection !== "L") moveWay = "R"; break;
+      case 'up': moveWay = "U"; break;
+      case 'down': moveWay = "D"; break;
+      case 'left': moveWay = "L"; break;
+      case 'right': moveWay = "R"; break;
     }
   };
 
   // Для мобильных устройств
   btn.addEventListener('touchstart', handleStart, { passive: false });
-  // Для тестирования на десктопе (можно оставить)
-  btn.addEventListener('mousedown', handleStart);
 });
 
 // Food
-let listCount = 0; extraCount = 0;
-let speedUp = 0; extraSpawn = 0;
-let food = [{ x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'red' }];
-let extraFood = [{ x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen' }];
-let eatInSnake = false; let extraStartTime = true;
-let eatHere = 1;
-let colorFood = 'red';
-
 function drawFood() {
   if (speedUp == 2) {
     baseTick -= 0.5;
     shiftSpeed -= 0.5;
     speedUp = 0;
   }
-
   if (listCount >= food.length) return;
   const f = food[listCount];
   const cx = f.x + f.width / 2;
@@ -327,41 +285,29 @@ function drawFood() {
 }
 
 function eatFood() {
-  let horizontal, vertical, overlap;
+  let horizontal, vertical, overlap; // Для создания рандомных координат
   if (snake[0].x === food[listCount].x && snake[0].y === food[listCount].y) {
     const last = snake[snake.length - 1];
-    snake.push({ x: last.x, y: last.y });
-    listCount++; speedUp++; extraSpawn++; extraStartTime = true; eatInSnake = true; eatHere = 1;
-    if (extraSpawn > 10)
-      extraSpawn = 1;
-    // Eat position logic
+    snake.push({x: last.x, y: last.y}); // Увеличение змейки
+    listCount++; screenCount++; speedUp++; extraSpawn++; extraStartTime = true; eatInSnake = true; eatHere = 1;
+    if (extraSpawn > 10) extraSpawn = 1;
     do {
       horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
       vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
       overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
     } while (overlap);
     food.push({ x: horizontal, y: vertical, width: horizontalSize, height: verticalSize });
-
     if (exScTi != 0) {
-      const last = snake[snake.length - 1];
-      snake.push({ x: last.x, y: last.y });
-      listCount++;
-      do {
-        horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
-        vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
-        overlap = snake.some(seg => seg.x === horizontal && seg.y === vertical);
-      } while (overlap);
-      food.push({ x: horizontal, y: vertical, width: horizontalSize, height: verticalSize });
+      snake.push({x: last.x, y: snake.y});
+      screenCount++;
     }
   }
   if (snake[0].x === extraFood[extraCount].x && snake[0].y === extraFood[extraCount].y && extraSpawn == 10) {
     // Extra time start
     startExtraTime = Date.now();
     countdown();
-    //
-    const last = snake[snake.length - 1];
-    snake.push({ x: last.x, y: last.y });
-    listCount++; extraCount++; speedUp++; extraSpawn = 0;
+    snake.push({x: snake.x, y: snake.y});
+    listCount++; screenCount++; extraCount++; speedUp++; extraSpawn = 0;
     do {
       horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
       vertical = Math.floor(Math.random() * (canvas.height / 5)) * 5;
@@ -371,12 +317,9 @@ function eatFood() {
     extraFood.push({ x: Math.floor(Math.random() * (canvas.width / 5)) * 5, y: Math.floor(Math.random() * (canvas.height / 5)) * 5, width: 5, height: 5, color: 'yellowgreen' });
   }
   // Count 
-  count.textContent = "Счёт = " + listCount;
+  count.textContent = "Счёт = " + screenCount;
   extra.textContent = "Бонус = " + exScTi;
 }
-
-let startExtraTime; let exScTi = 0; // extraScreenTime 
-let startAppleGhost; let ghostTime = 0; // apple time out 
 
 function countdown() { // Обратный отсчет экстра времени
   const now = Date.now();
@@ -385,7 +328,6 @@ function countdown() { // Обратный отсчет экстра време�
   if (remaining > 0) requestAnimationFrame(countdown);
   exScTi = Math.ceil(remaining);
 }
-
 function countghost() { // Мерцание экстра яблока
   const now = Date.now();
   const elapsed = (now - startAppleGhost) / 1000;
@@ -397,7 +339,6 @@ function countghost() { // Мерцание экстра яблока
 function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
-
 function gameLoop(time) {
   if (time - lastUpdate >= tick) {
     lastUpdate = time;
@@ -409,5 +350,4 @@ function gameLoop(time) {
   }
   requestAnimationFrame(gameLoop);
 }
-
 gameLoop();
