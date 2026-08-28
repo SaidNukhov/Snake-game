@@ -64,7 +64,7 @@ body {
 
 #count, #extra {
   color: white;
-  font-size: 30px;
+  font-size: 25px;
   font-weight: 900;
 }
 
@@ -155,9 +155,14 @@ body {
     font-size: 20px;
   }
   #count, #extra {
-    font-size: 12px;
+    font-size: 14px;
   }
   body {
-    margin-top: 20vh;
+    margin-top: 5vh;
+  }
+  .h2 {
+    margin-top: 5vh;
+    width: 100vw;
+    font-size: 10px;
   }
 } 
