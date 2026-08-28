@@ -128,16 +128,13 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
-
 html {
   line-height: 1.15;
   -webkit-text-size-adjust: 100%;
 }
-
 body {
   margin: 0;
 }
-
 @media(max-width: 900px) {
   body {
     grid-template-rows: 5% 90%;
@@ -159,5 +156,8 @@ body {
   }
   #count, #extra {
     font-size: 12px;
+  }
+  body {
+    margin-top: 20vh;
   }
 } 
