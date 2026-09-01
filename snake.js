@@ -214,8 +214,10 @@ document.querySelectorAll('.dpad button').forEach(btn => {
       tick = shiftSpeed;
     else if (newWay != way) 
       tick = baseTick;
-    else if (touchCount > 2)
-      touchCount = 0;
+    if (touchCount > 2){
+      tick = baseTick;
+      touchCount = 1;
+    }
   };
 
   // Для мобильных устройств
