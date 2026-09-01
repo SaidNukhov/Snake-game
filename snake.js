@@ -114,7 +114,7 @@ function drawSnake() {
 function updateSnakePosition() {
   function multiSide() {
     let reversedir; let nowdir = moveWay; let head = snake[0]; let newSnake = [];
-      
+      // if(moveWay == "U") reversedir = "D"; else if(moveWay == "D") reversedir = "U"; else if (moveWay == "R") reversedir = "L"; else if (moveWay == "L") reversedir = "R";
       if(nowdir == "U") 
         newSnake.push({x: head.x, y: head.y - verticalSize});
       else if(nowdir == "D") 
@@ -199,17 +199,23 @@ document.addEventListener('keyup', (e) => {
 )
 // Крестовина для смартфонов
 document.querySelectorAll('.dpad button').forEach(btn => {
+  let touchCount = 0; way = 0; newWay = 0;
   const dir = btn.dataset.dir;
-
   const handleStart = (e) => {
     e.preventDefault(); // предотвращаем скролл или выделение
     // Меняем направление, как в клавиатурных обработчиках
     switch (dir) {
-      case 'up': moveWay = "U"; break;
-      case 'down': moveWay = "D"; break;
-      case 'left': moveWay = "L"; break;
-      case 'right': moveWay = "R"; break;
+      case 'up': moveWay = "U"; touchCount++; way = "U"; if(touchCount > 1) newWay = way; break;
+      case 'down': moveWay = "D"; touchCount++; way = "D"; if(touchCount > 1) newWay = way; break;
+      case 'left': moveWay = "L"; touchCount++; way = "L"; if(touchCount > 1) newWay = way; break;
+      case 'right': moveWay = "R"; touchCount++; way = "R"; if(touchCount > 1) newWay = way; break;
     }
+    if(newWay == way)
+      tick = shiftSpeed;
+    else if (newWay != way) 
+      tick = baseTick;
+    else if (touchCount > 2)
+      touchCount = 0;
   };
 
   // Для мобильных устройств
