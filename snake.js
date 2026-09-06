@@ -206,10 +206,10 @@ document.querySelectorAll('.dpad button').forEach(btn => {
     e.preventDefault(); // предотвращаем скролл или выделение
     // Меняем направление, как в клавиатурных обработчиках
     switch (dir) {
-      case 'up': if (moveWay != "D") moveWay = "U"; nowdir = "U"; break;
-      case 'down': if (moveWay != "U") moveWay = "D"; nowdir = "D"; break;
-      case 'left': if (moveWay != "R") moveWay = "L"; nowdir = "L"; break;
-      case 'right': if (moveWay != "L") moveWay = "R"; nowdir = "R"; break;
+      case 'up': if(moveWay != "D" && currentDirection == null){moveWay = "U", currentDirection = "U"}; nowdir = "U"; break;
+      case 'down': if(moveWay != "U" && currentDirection == null){moveWay = "D", currentDirection = "D"}; nowdir = "D"; break;
+      case 'left': if(moveWay != "R" && currentDirection == null){moveWay = "L", currentDirection = "L"}; nowdir = "L"; break;
+      case 'right': if(moveWay != "L" && currentDirection == null){moveWay = "R", currentDirection = "R"}; nowdir = "R"; break;
     };
     if (moveWay == lastmoveWay && lastdir == nowdir)
       touchCount++;
