@@ -5,10 +5,7 @@ const count = document.getElementById('count');
 const extra = document.getElementById('extra');
 // lets
 // Time
-let baseTick = 100;
-let tick = 100;
-let lastUpdate = 0;
-let shiftSpeed = 50;
+let baseTick = 100; let tick = 100; let lastUpdate = 0; let shiftSpeed = 50; let lastKeyPressedTime = 0; let keyPressedCooldown = 100;
 // Extra TIme 
 let startExtraTime; let exScTi = 0; // extraScreenTime 
 let startAppleGhost; let ghostTime = 0; // apple time out 
@@ -18,7 +15,7 @@ let snake = [
   { x: 130, y: 80 } // Head
 ]
 // Move
-let moveWay = "U";
+let moveWay = "U"; let lastdir; let lastmoveWay; let nowdir; let touchCount = 0; let currentDirection = null;
 // Food
 let listCount = 0; screenCount = 0; extraCount = 0;
 let speedUp = 0; extraSpawn = 0;
@@ -113,21 +110,21 @@ function drawSnake() {
 // Move
 function updateSnakePosition() {
   function multiSide() {
-    let reversedir; let nowdir = moveWay; let head = snake[0]; let newSnake = [];
-      // if(moveWay == "U") reversedir = "D"; else if(moveWay == "D") reversedir = "U"; else if (moveWay == "R") reversedir = "L"; else if (moveWay == "L") reversedir = "R";
-      if(nowdir == "U") 
-        newSnake.push({x: head.x, y: head.y - verticalSize});
-      else if(nowdir == "D") 
-        newSnake.push({x: head.x, y: head.y + verticalSize});
-      else if(nowdir == "R") 
-        newSnake.push({x: head.x + horizontalSize, y: head.y});
-      else if(nowdir == "L") 
-        newSnake.push({x: head.x - horizontalSize, y: head.y}); 
+    let head = snake[0]; let newSnake = [];
+    if (moveWay == "U")
+      newSnake.push({ x: head.x, y: head.y - verticalSize });
+    else if (moveWay == "D")
+      newSnake.push({ x: head.x, y: head.y + verticalSize });
+    else if (moveWay == "R")
+      newSnake.push({ x: head.x + horizontalSize, y: head.y });
+    else if (moveWay == "L")
+      newSnake.push({ x: head.x - horizontalSize, y: head.y });
 
-      for(let i = 0; i < snake.length - 1; i++){
-        newSnake.push(snake[i]);
-      }
-      snake = newSnake;
+    for (let i = 0; i < snake.length - 1; i++) {
+      newSnake.push(snake[i]);
+    }
+    snake = newSnake;
+    currentDirection = null;
   }
   // Game over
   if (snake.length > 2) {
@@ -135,10 +132,8 @@ function updateSnakePosition() {
       if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
         alert("Game Over");
         location.reload();
-      }
-    }
-  };
-  switch (moveWay) { 
+  }}};
+  switch (moveWay) {
     case "U":
       multiSide();
       break;
@@ -151,8 +146,6 @@ function updateSnakePosition() {
     case "R":
       multiSide();
       break;
-    default:
-      break;
   };
   // Выход за границы поля
   let headX = snake[0].x;
@@ -163,27 +156,36 @@ function updateSnakePosition() {
   if (headY < 0) headY = canvas.height;
   snake[0].x = headX;
   snake[0].y = headY;
-} // Конец UpdateSnakePosition
+}
+// Конец UpdateSnakePosition
 document.addEventListener('keydown', (event) => {
   switch (event.key) {
     case 'ArrowUp':
-      if(moveWay !== "D")
+      if (moveWay != "D" && currentDirection == null){
         moveWay = "U";
+        currentDirection = "U"
+      }
       break;
     case 'ArrowDown':
-      if(moveWay !== "U")
+      if (moveWay != "U" && currentDirection == null){
         moveWay = "D";
+        currentDirection = "D";
+      }
       break;
     case 'ArrowLeft':
-      if(moveWay !== "R")
+      if (moveWay != "R" && currentDirection == null){
         moveWay = "L";
+        currentDirection = "L";
+      }
       break;
     case 'ArrowRight':
-      if(moveWay !== "L")
+      if (moveWay != "L" && currentDirection == null){
         moveWay = "R";
+        currentDirection = "R";
+      }
       break;
     }
-  } 
+  }
 );
 // Ускорение змейки на shift
 document.addEventListener('keydown', (e) => {
@@ -199,27 +201,30 @@ document.addEventListener('keyup', (e) => {
 )
 // Крестовина для смартфонов
 document.querySelectorAll('.dpad button').forEach(btn => {
-  let touchCount = 0; way = 0; newWay = 0;
   const dir = btn.dataset.dir;
   const handleStart = (e) => {
     e.preventDefault(); // предотвращаем скролл или выделение
     // Меняем направление, как в клавиатурных обработчиках
     switch (dir) {
-      case 'up': moveWay = "U"; touchCount++; way = "U"; if(touchCount > 1) newWay = way; break;
-      case 'down': moveWay = "D"; touchCount++; way = "D"; if(touchCount > 1) newWay = way; break;
-      case 'left': moveWay = "L"; touchCount++; way = "L"; if(touchCount > 1) newWay = way; break;
-      case 'right': moveWay = "R"; touchCount++; way = "R"; if(touchCount > 1) newWay = way; break;
+      case 'up': if (moveWay != "D") moveWay = "U"; nowdir = "U"; break;
+      case 'down': if (moveWay != "U") moveWay = "D"; nowdir = "D"; break;
+      case 'left': if (moveWay != "R") moveWay = "L"; nowdir = "L"; break;
+      case 'right': if (moveWay != "L") moveWay = "R"; nowdir = "R"; break;
+    };
+    if (moveWay == lastmoveWay && lastdir == nowdir)
+      touchCount++;
+    if (touchCount < 1)
+      tick = baseTick;
+    if (touchCount > 1 || lastmoveWay != moveWay) {
+      tick = baseTick;
+      touchCount = 0;
     }
-    if(newWay == way)
+    if (touchCount == 1) {
       tick = shiftSpeed;
-    else if (newWay != way) 
-      tick = baseTick;
-    if (touchCount > 2){
-      tick = baseTick;
-      touchCount = 1;
     }
+    lastdir = nowdir;
+    lastmoveWay = moveWay;
   };
-
   // Для мобильных устройств
   btn.addEventListener('touchstart', handleStart, { passive: false });
 });
@@ -296,7 +301,7 @@ function eatFood() {
   let horizontal, vertical, overlap; // Для создания рандомных координат
   if (snake[0].x === food[listCount].x && snake[0].y === food[listCount].y) {
     const last = snake[snake.length - 1];
-    snake.push({x: last.x, y: last.y}); // Увеличение змейки
+    snake.push({ x: last.x, y: last.y }); // Увеличение змейки
     listCount++; screenCount++; speedUp++; extraSpawn++; extraStartTime = true; eatInSnake = true; eatHere = 1;
     if (extraSpawn > 10) extraSpawn = 1;
     do {
@@ -306,7 +311,7 @@ function eatFood() {
     } while (overlap);
     food.push({ x: horizontal, y: vertical, width: horizontalSize, height: verticalSize });
     if (exScTi != 0) {
-      snake.push({x: last.x, y: snake.y});
+      snake.push({ x: last.x, y: snake.y });
       screenCount++;
     }
   }
@@ -314,7 +319,7 @@ function eatFood() {
     // Extra time start
     startExtraTime = Date.now();
     countdown();
-    snake.push({x: snake.x, y: snake.y});
+    snake.push({ x: snake.x, y: snake.y });
     listCount++; screenCount++; extraCount++; speedUp++; extraSpawn = 0;
     do {
       horizontal = Math.floor(Math.random() * (canvas.width / 5)) * 5;
